@@ -1,12 +1,11 @@
 const express = require('express')
 const app = express()
 const port = 5000
-
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const config = require('./server/config/key');
 const { auth } = require('./server/middleware/auth');
-const { User } = require("./server/models/User");
+const { User } = require('./server/models/User');
 
 //application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: true}));
@@ -44,7 +43,7 @@ app.post('/api/users/register', (req, res) => {
 })
 
 app.post('/api/users/login', (req, res) => {
-
+    console.log("!")
     // 요청된 이메일을 데이터베이스에서 있는지 찾는다
     User.findOne({ email: req.body.email }, (err, user) => {
         if(!user){
@@ -77,6 +76,7 @@ app.post('/api/users/login', (req, res) => {
 app.get('/api/users/auth', auth , (req,res) => {
     //여기까지 middleware를 통과해 왔다는 얘기는 Authentication이 true라는 말!
     //role=0 : 일반 유저
+    console.log("auth?");
     res.status(200).json({
         _id: req.user._id,
         isAdmin: req.user.role === 0? false : true,
@@ -90,18 +90,15 @@ app.get('/api/users/auth', auth , (req,res) => {
 })
 
 app.get('/api/users/logout', auth, (req, res) => {
-    // console.log('req.user', req.user)
-    User.findOneAndUpdate({ _id: req.user._id },
-      { token: "" }
-      , (err, user) => {
-        if (err){
-            return res.json({ success: false, err });
-        } 
-        return res.status(200).send({
-          success: true
+    User.findOneAndUpdate({ _id: req.user._id},
+        {token: ""}
+        , (err, user) => {
+            if(err) return res.json({ success: false, err });
+            return res.status(200).send({
+                success: true
+            })
         })
-      })
-  })
+})
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}!`);

@@ -2,7 +2,7 @@ const { User } = require('../models/User');
 
 let auth = (req, res, next) => {
 
-    // 인증 처리르 하는 곳
+    // 인증 처리를 하는 곳
 
     // client cookie에서 token을 가져옴
     let token = req.cookies.x_auth;
